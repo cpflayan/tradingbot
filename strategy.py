@@ -115,6 +115,12 @@ for i in range(len(future_returns)):
         partial_exit = False
         holding = True
 
+        if i == len(future_returns) - 1:  # 最新一筆才真實下單
+           symbol = "ETHUSDT"
+           usdt_balance = float(client.futures_account_balance()[6]['balance'])
+           order_qty = round((usdt_balance * position * leverage) / df.loc[X_test.index[i], 'close'], 3)
+           place_order(symbol, "BUY", order_qty)
+
         for day in range(future_n):
             daily_ret = daily_ret_matrix[i, day]
             pnl = position * daily_ret
