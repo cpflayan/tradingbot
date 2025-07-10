@@ -2,8 +2,8 @@
 from binance.client import Client
 from binance.enums import *
 
-API_KEY = "你的API_KEY"
-API_SECRET = "你的API_SECRET"
+API_KEY = "UH6vSZ9BfxPeaVzVj1tyBEvKlph4U6dGKsmip71fPmgBfhFf0K3PXIHDQNgtbAOi"
+API_SECRET = "w9NOqdRvIdtJcGvGiL0fE7kEzOCA7IoHjkP8FaFtznghkouMowcuSxVn5KLTMpG7"
 
 client = Client(API_KEY, API_SECRET)
 client.FUTURES_URL = 'https://testnet.binancefuture.com/fapi'  # 切換到 Testnet
