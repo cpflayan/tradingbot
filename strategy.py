@@ -47,6 +47,8 @@ def get_signal(df, clf, reg):
     df = apply_indicators(df).dropna()
     latest = df.iloc[-1:]
     features = ['ema_gap', 'rsi', 'macd', 'cci', 'stoch', 'vol_ratio']
-    proba = clf.predict_proba(latest[features])[:, 1][0]
-    ret_pred = reg.predict(latest[features])[0]
+    dmatrix = xgb.DMatrix(latest)
+    log_odds = clf.predict(dmatrix)[0]
+    proba = 1 / (1 + np.exp(-log_odds))
+    ret_pred = reg.predict(dmatrix)[0]
     return proba, ret_pred
