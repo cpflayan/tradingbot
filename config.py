@@ -1,6 +1,6 @@
 # === config.py: 策略參數設置 ===
-API_KEY = "你的API_KEY"
-API_SECRET = "你的API_SECRET"
+API_KEY = "UH6vSZ9BfxPeaVzVj1tyBEvKlph4U6dGKsmip71fPmgBfhFf0K3PXIHDQNgtbAOi"
+API_SECRET = "w9NOqdRvIdtJcGvGiL0fE7kEzOCA7IoHjkP8FaFtznghkouMowcuSxVn5KLTMpG7"
 
 SYMBOL = "ETHUSDT"
 LEVERAGE = 20
