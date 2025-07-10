@@ -1,11 +1,32 @@
 # 強化版 AI 自動交易策略（含 Debug 訊息）
+from binance.client import Client
+from binance.enums import *
 
+API_KEY = "你的API_KEY"
+API_SECRET = "你的API_SECRET"
+
+client = Client(API_KEY, API_SECRET)
+client.FUTURES_URL = 'https://testnet.binancefuture.com/fapi'  # 切換到 Testnet
 import pandas as pd
 import numpy as np
 from ta.momentum import RSIIndicator, StochasticOscillator
 from ta.trend import MACD, CCIIndicator
 from xgboost import XGBClassifier, XGBRegressor
 import matplotlib.pyplot as plt
+def place_order(symbol, side, quantity, leverage=20):
+    try:
+        client.futures_change_leverage(symbol=symbol, leverage=leverage)
+        order = client.futures_create_order(
+            symbol=symbol,
+            side=SIDE_BUY if side == "BUY" else SIDE_SELL,
+            type=ORDER_TYPE_MARKET,
+            quantity=quantity
+        )
+        print(f"✅ 成功下單：{side} {quantity} {symbol}")
+        return order
+    except Exception as e:
+        print(f"❌ 下單失敗：{e}")
+        return None
 
 # === 1. 讀取資料 ===
 df = pd.read_csv("eth_usdt.csv")
