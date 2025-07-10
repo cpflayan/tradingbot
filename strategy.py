@@ -6,6 +6,8 @@ from ta.momentum import RSIIndicator, StochasticOscillator
 from ta.trend import MACD, CCIIndicator
 import joblib
 from config import *
+import xgboost as xgb
+
 
 def fetch_klines(client):
     klines = client.futures_klines(symbol=SYMBOL, interval=INTERVAL, limit=LOOKBACK)
@@ -32,8 +34,12 @@ def apply_indicators(df):
     return df
 
 def load_models():
-    clf = joblib.load(MODEL_CLF)
-    reg = joblib.load(MODEL_REG)
+    clf = xgb.Booster()
+    clf.load_model("clf_model.json")
+
+    reg = xgb.Booster()
+    reg.load_model("reg_model.json")
+
     return clf, reg
 
 def get_signal(df, clf, reg):
