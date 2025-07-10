@@ -11,3 +11,7 @@ MAX_SINGLE_LOSS = 0.01
 TAKE_PROFIT = 0.05
 LOOKBACK_N = 5
 FUTURE_N = 8        # 使用槓桿倍數
+INTERVAL = "4h"
+LOOKBACK = 300
+MODEL_CLF = "clf_model.pkl"
+MODEL_REG = "reg_model.pkl"
