@@ -1,13 +1,25 @@
 # === strategy.py ===
-def load_model():
-    import joblib
-    clf = joblib.load("clf_model.pkl")
-    reg = joblib.load("reg_model.pkl")
-    return clf, reg
 
-def extract_features(df):
-    from ta.momentum import RSIIndicator, StochasticOscillator
-    from ta.trend import MACD, CCIIndicator
+import pandas as pd
+import numpy as np
+from ta.momentum import RSIIndicator, StochasticOscillator
+from ta.trend import MACD, CCIIndicator
+import joblib
+from config import *
+
+def fetch_klines(client):
+    klines = client.futures_klines(symbol=SYMBOL, interval=INTERVAL, limit=LOOKBACK)
+    df = pd.DataFrame(klines, columns=[
+        "timestamp", "open", "high", "low", "close", "volume",
+        "close_time", "quote_asset_volume", "number_of_trades",
+        "taker_buy_base_volume", "taker_buy_quote_volume", "ignore"
+    ])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+    df.set_index("timestamp", inplace=True)
+    df = df.astype(float)
+    return df
+
+def apply_indicators(df):
     df['ema20'] = df['close'].ewm(span=20).mean()
     df['ema50'] = df['close'].ewm(span=50).mean()
     df['ema_gap'] = df['ema20'] - df['ema50']
@@ -19,13 +31,16 @@ def extract_features(df):
     df['vol_ratio'] = df['volume'] / df['vol_ma']
     return df
 
-def make_decision(clf, reg, df, config):
-    df = extract_features(df)
+def load_models():
+    clf = joblib.load(MODEL_CLF)
+    reg = joblib.load(MODEL_REG)
+    return clf, reg
+
+def get_signal(df, clf, reg):
+    df = df.copy()
+    df = apply_indicators(df).dropna()
+    latest = df.iloc[-1:]
     features = ['ema_gap', 'rsi', 'macd', 'cci', 'stoch', 'vol_ratio']
-    x = df[features].dropna().iloc[-1:]
-    prob = clf.predict_proba(x)[0, 1]
-    pred_return = reg.predict(x)[0]
-    if prob > config.THRESH_PROB and pred_return > config.THRESH_RET:
-        position_size = min(pred_return * 100, config.MAX_POSITION)
-        return True, position_size
-    return False, 0.0
+    proba = clf.predict_proba(latest[features])[:, 1][0]
+    ret_pred = reg.predict(latest[features])[0]
+    return proba, ret_pred
