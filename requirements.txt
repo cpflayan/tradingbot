@@ -1,8 +1,0 @@
-pandas
-numpy
-matplotlib
-ta
-xgboost
-python-binance
-schedule
-python-dotenv
